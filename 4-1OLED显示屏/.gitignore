@@ -1,0 +1,17 @@
+# Keil MDK编译输出
+Objects/
+Listings/
+*.axf
+*.hex
+*.map
+*.crf
+*.o
+*.d
+*.htm
+*.dep
+*.sct
+*.uvguix.*
+*.bak
+
+# 其他临时文件
+*.log
