@@ -1,6 +1,6 @@
 #include "stm32f10x.h"                  // Device header
 
-#define KEY_DOU_TICKS		200	  //消抖时间
+#define KEY_DOU_TICKS		200  //消抖时间
 
 
 
@@ -44,25 +44,34 @@ volatile uint8_t Key_Event = 0;
 {
 	if (Key_State == 1)		
 	{
-		if (++ Key_Timer >= KEY_DOU_TICKS)
+		if(GPIO_ReadInputDataBit(GPIOA,GPIO_Pin_12) == 0)
 		{
-			if(GPIO_ReadInputDataBit(GPIOA,GPIO_Pin_12) == 0)
-			{
+			if (++ Key_Timer >= KEY_DOU_TICKS)
+				{
 				Key_Event = 1;
 				Key_State = 2;
 				Key_Timer = 0;
+				}
 			}
 			else
 			{
-				Key_State = 0;
+				Key_Timer = 0;
 			}
-		}
+		
 	}
 	else if (Key_State == 2)
 	{
 		if (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_12) == 1) 
 			{
+				if(++Key_Timer >=KEY_DOU_TICKS)
+				{
 			Key_State = 0; 
+				Key_Timer=0;
+				}
+			}
+			else
+			{
+			Key_Timer=0;
 			}
 	}
 }
@@ -70,10 +79,13 @@ volatile uint8_t Key_Event = 0;
  uint8_t Key_GetNum(void)
 {
 	uint8_t KeyNum = 0;												
-	 
+	 __disable_irq();
+	if(Key_Event)
+	{
 	KeyNum = Key_Event;												
 	Key_Event = 0;													
-	
+	}
+	__enable_irq();
 	return KeyNum;		
 }
 	
